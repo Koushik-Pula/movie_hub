@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Header({
@@ -18,19 +18,21 @@ export default function Header({
   setSelectedSuggestion,
   suggestions,
   handleKeyDown
-  
 }) {
     const navigate = useNavigate();
+    const [showCategories, setShowCategories] = useState(false);
     
     const handleSearchClick = () => {
         if (!query.trim()) return;
-        // Clear suggestions when searching
         setSelectedSuggestion(-1);
         navigate(`/search?query=${encodeURIComponent(query.trim())}`);
     };
 
-    
-  return (
+    const toggleCategories = () => {
+        setShowCategories(!showCategories);
+    };
+
+    return (
     <header className="mh-header">
       <h1 className="mh-logo" onClick={handleHome}>
         🎬 Movie<span>Hub</span>
@@ -102,23 +104,37 @@ export default function Header({
           Include NSFW
         </label>
 
-        <div className="mh-categories">
-          <button
-            className={`mh-cat-btn ${selectedGenre === "" ? "active" : ""}`}
-            onClick={() => handleGenreClick("")}
-          >
-            All
-          </button>
-          {genres.map((g) => (
-            <button
-              key={g.id}
-              className={`mh-cat-btn ${selectedGenre === g.id ? "active" : ""}`}
-              onClick={() => handleGenreClick(g.id)}
-            >
-              {g.name}
-            </button>
-          ))}
-        </div>
+        <button className="mh-category-toggle" onClick={toggleCategories}>
+          Categories
+        </button>
+
+        {showCategories && (
+          <div className="mh-categories-dropdown">
+            <div className="mh-categories-grid">
+              <button
+                className={`mh-cat-btn ${selectedGenre === "" ? "active" : ""}`}
+                onClick={() => {
+                  handleGenreClick("");
+                  setShowCategories(false);
+                }}
+              >
+                All
+              </button>
+              {genres.map((g) => (
+                <button
+                  key={g.id}
+                  className={`mh-cat-btn ${selectedGenre === g.id ? "active" : ""}`}
+                  onClick={() => {
+                    handleGenreClick(g.id);
+                    setShowCategories(false);
+                  }}
+                >
+                  {g.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </header>
   );

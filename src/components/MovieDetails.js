@@ -18,7 +18,6 @@ export default function MovieDetails() {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  // Header states
   const [query, setQuery] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [includeAdult, setIncludeAdult] = useState(false);
@@ -28,33 +27,28 @@ export default function MovieDetails() {
 
   const handleHomeClick = () => navigate("/");
 
-  // Fetch movie details
   useEffect(() => {
     async function fetchMovieData() {
       setLoading(true);
       try {
-        // Fetch movie details
         const movieRes = await fetch(
           `https://api.themoviedb.org/3/movie/${id}?api_key=${TMDB_API}&language=en-US`
         );
         const movieData = await movieRes.json();
         setMovie(movieData);
 
-        // Fetch cast
         const creditsRes = await fetch(
           `https://api.themoviedb.org/3/movie/${id}/credits?api_key=${TMDB_API}`
         );
         const creditsData = await creditsRes.json();
         setCast(creditsData.cast?.slice(0, 10) || []);
 
-        // Fetch similar movies
         const similarRes = await fetch(
           `https://api.themoviedb.org/3/movie/${id}/similar?api_key=${TMDB_API}&language=en-US&page=1`
         );
         const similarData = await similarRes.json();
         setSimilar(similarData.results?.slice(0, 6) || []);
 
-        // Fetch videos (trailers)
         const videosRes = await fetch(
           `https://api.themoviedb.org/3/movie/${id}/videos?api_key=${TMDB_API}&language=en-US`
         );
@@ -71,7 +65,6 @@ export default function MovieDetails() {
     fetchMovieData();
   }, [id]);
 
-  // Handle search suggestions
   useEffect(() => {
     if (!query.trim()) {
       setSuggestions([]);
@@ -95,7 +88,6 @@ export default function MovieDetails() {
     return () => clearTimeout(timer);
   }, [query, includeAdult]);
 
-  // Close suggestions on outside click
   useEffect(() => {
     function handleClickOutside(event) {
       if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
@@ -139,6 +131,13 @@ export default function MovieDetails() {
         handleSearchClick();
       }
     }
+  };
+
+  const getStatusClass = (status) => {
+    if (status?.toLowerCase().includes('released')) return 'status-released';
+    if (status?.toLowerCase().includes('production')) return 'status-production';
+    if (status?.toLowerCase().includes('planned')) return 'status-planned';
+    return 'status-other';
   };
 
   if (loading) {
@@ -217,7 +216,6 @@ export default function MovieDetails() {
       />
 
       <main className="md-main">
-        {/* Backdrop */}
         <div 
           className="md-backdrop"
           style={{
@@ -229,7 +227,6 @@ export default function MovieDetails() {
           <div className="md-backdrop-overlay"></div>
         </div>
 
-        {/* Movie Info */}
         <div className="md-content">
           <div className="md-hero">
             <div className="md-poster-container">
@@ -266,24 +263,35 @@ export default function MovieDetails() {
 
               <div className="md-details">
                 <div className="md-detail-item">
-                  <strong>Status:</strong> {movie.status}
+                  <strong>Status</strong>
+                  <span className={`md-detail-value ${getStatusClass(movie.status)}`}>
+                    {movie.status}
+                  </span>
                 </div>
                 <div className="md-detail-item">
-                  <strong>Budget:</strong> ${movie.budget?.toLocaleString() || 'N/A'}
+                  <strong>Budget</strong>
+                  <span className="md-detail-value">
+                    {movie.budget ? `$${movie.budget.toLocaleString()}` : 'N/A'}
+                  </span>
                 </div>
                 <div className="md-detail-item">
-                  <strong>Revenue:</strong> ${movie.revenue?.toLocaleString() || 'N/A'}
+                  <strong>Revenue</strong>
+                  <span className="md-detail-value">
+                    {movie.revenue ? `$${movie.revenue.toLocaleString()}` : 'N/A'}
+                  </span>
                 </div>
                 {movie.production_companies?.length > 0 && (
                   <div className="md-detail-item">
-                    <strong>Production:</strong> {movie.production_companies.map(c => c.name).join(', ')}
+                    <strong>Production</strong>
+                    <span className="md-detail-value">
+                      {movie.production_companies.map(c => c.name).join(', ')}
+                    </span>
                   </div>
                 )}
               </div>
             </div>
           </div>
 
-          {/* Cast */}
           {cast.length > 0 && (
             <section className="md-section">
               <h2 className="md-section-title">Cast</h2>
@@ -308,7 +316,6 @@ export default function MovieDetails() {
             </section>
           )}
 
-          {/* Videos/Trailers */}
           {videos.length > 0 && (
             <section className="md-section">
               <h2 className="md-section-title">Trailers</h2>
@@ -330,7 +337,6 @@ export default function MovieDetails() {
             </section>
           )}
 
-          {/* Similar Movies */}
           {similar.length > 0 && (
             <section className="md-section">
               <h2 className="md-section-title">Similar Movies</h2>

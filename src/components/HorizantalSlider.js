@@ -19,26 +19,25 @@ export default function HorizontalSlider({ title, movies }) {
   };
 
   return (
-    <div className="mh-section">
-      <h2 className="mh-section-title">{title}</h2>
+    <div className="mh-slider-section">
+      <h2 className="mh-slider-title">{title}</h2>
       <div className="mh-row-container">
         <button className="mh-row-btn left" onClick={() => scroll("left")}>◀</button>
         <div className="mh-row" ref={rowRef}>
           {movies.map((m) => (
             <div 
-              className="mh-card mh-card-small" 
+              className="mh-slider-card" 
               key={m.id}
               onClick={() => handleMovieClick(m.id)}
-              style={{ cursor: "pointer" }}
             >
               <img
                 src={m.poster_path ? `https://image.tmdb.org/t/p/w200${m.poster_path}` : "/placeholder.png"}
                 alt={m.title}
-                className="mh-poster"
+                className="mh-slider-poster"
               />
-              <div className="mh-meta">
-                <h3 className="mh-movietitle">{m.title}</h3>
-                <p className="mh-rating">⭐ {m.vote_average}</p>
+              <div className="mh-slider-meta">
+                <h3 className="mh-slider-title-text">{m.title}</h3>
+                <p className="mh-slider-rating">⭐ {m.vote_average.toFixed(1)}</p>
               </div>
             </div>
           ))}

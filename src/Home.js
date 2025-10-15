@@ -3,10 +3,8 @@ import MovieGrid from "./components/MovieGrid";
 import HorizontalSlider from "./components/HorizantalSlider";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-
 import "./styles/HorizantalSlider.css";
 import "./styles/main.css";
-
 import { useNavigate } from "react-router-dom";
 
 const TMDB_API = process.env.REACT_APP_TMDB_API_KEY;
@@ -21,13 +19,10 @@ export default function App() {
   const [suggestions, setSuggestions] = useState([]);
   const [selectedSuggestion, setSelectedSuggestion] = useState(-1);
   const [showSuggestions, setShowSuggestions] = useState(false);
-
   const [popularMovies, setPopularMovies] = useState([]);
   const [newReleaseMovies, setNewReleaseMovies] = useState([]);
   const [upcomingMovies, setUpcomingMovies] = useState([]);
   const [genreMovies, setGenreMovies] = useState({});
-
-
   const searchContainerRef = useRef(null);
   const navigate = useNavigate();
 
@@ -45,7 +40,22 @@ export default function App() {
     }
     if (genres.length) fetchGenreMovies();
   }, [genres]);
-  
+
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const popularRes = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API}`);
+        setPopularMovies((await popularRes.json()).results || []);
+        const nowPlayingRes = await fetch(`https://api.themoviedb.org/3/movie/now_playing?api_key=${TMDB_API}`);
+        setNewReleaseMovies((await nowPlayingRes.json()).results || []);
+        const upcomingRes = await fetch(`https://api.themoviedb.org/3/movie/upcoming?api_key=${TMDB_API}`);
+        setUpcomingMovies((await upcomingRes.json()).results || []);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     if (suggestions.length > 0) {
@@ -56,36 +66,15 @@ export default function App() {
   }, [suggestions]);
 
   useEffect(() => {
-    async function fetchCategories() {
-      try {
-        const popularRes = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API}`);
-        setPopularMovies((await popularRes.json()).results || []);
-  
-        const nowPlayingRes = await fetch(`https://api.themoviedb.org/3/movie/now_playing?api_key=${TMDB_API}`);
-        setNewReleaseMovies((await nowPlayingRes.json()).results || []);
-  
-        const upcomingRes = await fetch(`https://api.themoviedb.org/3/movie/upcoming?api_key=${TMDB_API}`);
-        setUpcomingMovies((await upcomingRes.json()).results || []);
-      } catch (err) {
-        console.error(err);
-      }
-    }
-  
-    fetchCategories();
-  }, []);
-  
-
-  useEffect(() => {
     const handleClickOutside = (event) => {
       if (
         searchContainerRef.current &&
         !searchContainerRef.current.contains(event.target)
       ) {
-        setSuggestions([]); // close dropdown
+        setSuggestions([]);
         setSelectedSuggestion(-1);
       }
     };
-  
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -106,7 +95,6 @@ export default function App() {
       setSuggestions([]);
       return;
     }
-  
     const timer = setTimeout(async () => { 
       try {
         const res = await fetch(
@@ -118,12 +106,8 @@ export default function App() {
         setSuggestions([]);
       }
     }, 300); 
-  
     return () => clearTimeout(timer);
   }, [query, includeAdult]);
-
-  
-  
 
   const handleSearchClick = () => {
     if (query.trim()) {
@@ -136,22 +120,18 @@ export default function App() {
     setSearchTerm("");
     setQuery("");
     setPage(1);
-  
     if (id) {
       const section = document.getElementById(`genre-${id}`);
       if (section) {
         section.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     } else {
-      // scroll to top if "All" is clicked
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
-  
 
   const handleKeyDown = (e) => {
     if (!suggestions.length) return;
-  
     if (e.key === "ArrowDown") {
       setSelectedSuggestion((prev) =>
         prev < suggestions.length - 1 ? prev + 1 : 0
@@ -172,7 +152,6 @@ export default function App() {
       }
     }
   };
-  
 
   const handleHome = () => {
     setSelectedGenre("");
@@ -187,39 +166,46 @@ export default function App() {
   return (
     <div className="mh-app">
       <Header
-      query={query}
-  setQuery={setQuery}
-  searchTerm={searchTerm}
-  setSearchTerm={setSearchTerm}
-  includeAdult={includeAdult}
-  setIncludeAdult={setIncludeAdult}
-  genres={genres}
-  selectedGenre={selectedGenre}
-  handleGenreClick={handleGenreClick}
-  handleHome={handleHome}
-  onSearch={handleSearchClick}
-  searchContainerRef={searchContainerRef}
-  selectedSuggestion={selectedSuggestion}
-  setSelectedSuggestion={setSelectedSuggestion}
-  suggestions={suggestions}
-      handleKeyDown={handleKeyDown}
+        query={query}
+        setQuery={setQuery}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        includeAdult={includeAdult}
+        setIncludeAdult={setIncludeAdult}
+        genres={genres}
+        selectedGenre={selectedGenre}
+        handleGenreClick={handleGenreClick}
+        handleHome={handleHome}
+        onSearch={handleSearchClick}
+        searchContainerRef={searchContainerRef}
+        selectedSuggestion={selectedSuggestion}
+        setSelectedSuggestion={setSelectedSuggestion}
+        suggestions={suggestions}
+        handleKeyDown={handleKeyDown}
       />
-      
-
-
-
-<main className="mh-main">
-  {genres.map((g) => (
-    <section id={`genre-${g.id}`} key={g.id} className="mh-section">
-      <h2 className="mh-section-title">{g.name}</h2>
-      <HorizontalSlider title={g.name} movies={genreMovies[g.id] || []} />
-    </section>
-  ))}
-</main>
-
-
-
-<Footer />
+      <main className="mh-main">
+        {popularMovies.length > 0 && (
+          <section id="popular" className="mh-section">
+            <HorizontalSlider title="Popular Movies" movies={popularMovies} />
+          </section>
+        )}
+        {newReleaseMovies.length > 0 && (
+          <section id="new-releases" className="mh-section">
+            <HorizontalSlider title="New Releases" movies={newReleaseMovies} />
+          </section>
+        )}
+        {upcomingMovies.length > 0 && (
+          <section id="upcoming" className="mh-section">
+            <HorizontalSlider title="Upcoming Movies" movies={upcomingMovies} />
+          </section>
+        )}
+        {genres.map((g) => (
+          <section id={`genre-${g.id}`} key={g.id} className="mh-section">
+            <HorizontalSlider title={g.name} movies={genreMovies[g.id] || []} />
+          </section>
+        ))}
+      </main>
+      <Footer />
     </div>
   );
 }
