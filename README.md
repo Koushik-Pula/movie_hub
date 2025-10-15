@@ -23,7 +23,7 @@ A modern, responsive movie discovery application built with React that allows us
 
 ## 🚀 Live Demo
 
-[View Live Demo](https://your-moviehub-app.vercel.app)
+[View Live Demo](https://movie-hub-taupe-seven.vercel.app/)
 
 ## 🛠️ Tech Stack
 
