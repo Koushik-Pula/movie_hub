@@ -14,6 +14,7 @@ export default function MovieDetails() {
   
   const [movie, setMovie] = useState(null);
   const [cast, setCast] = useState([]);
+  const [crew, setCrew] = useState({});
   const [similar, setSimilar] = useState([]);
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -42,6 +43,19 @@ export default function MovieDetails() {
         );
         const creditsData = await creditsRes.json();
         setCast(creditsData.cast?.slice(0, 10) || []);
+
+        const crewData = creditsData.crew || [];
+        const directors = crewData.filter(person => person.job === 'Director');
+        const writers = crewData.filter(person => person.job === 'Writer' || person.job === 'Screenplay');
+        const composers = crewData.filter(person => person.job === 'Original Music Composer');
+        const cinematographers = crewData.filter(person => person.job === 'Director of Photography');
+
+        setCrew({
+          directors,
+          writers,
+          composers,
+          cinematographers
+        });
 
         const similarRes = await fetch(
           `https://api.themoviedb.org/3/movie/${id}/similar?api_key=${TMDB_API}&language=en-US&page=1`
@@ -292,12 +306,105 @@ export default function MovieDetails() {
             </div>
           </div>
 
+          {/* Crew Section */}
+          {(crew.directors?.length > 0 || crew.writers?.length > 0 || crew.composers?.length > 0 || crew.cinematographers?.length > 0) && (
+            <section className="md-section">
+              <h2 className="md-section-title">Crew</h2>
+              <div className="md-cast-grid">
+                {crew.directors?.length > 0 && crew.directors.map(person => (
+                  <div 
+                    key={person.id} 
+                    className="md-cast-card"
+                    onClick={() => navigate(`/cast/${person.id}`)}
+                  >
+                    <img
+                      className="md-cast-photo"
+                      src={person.profile_path 
+                        ? `https://image.tmdb.org/t/p/w185${person.profile_path}`
+                        : "/placeholder.png"
+                      }
+                      alt={person.name}
+                    />
+                    <div className="md-cast-info">
+                      <p className="md-cast-name">{person.name}</p>
+                      <p className="md-cast-character">Director</p>
+                    </div>
+                  </div>
+                ))}
+                {crew.writers?.length > 0 && crew.writers.map(person => (
+                  <div 
+                    key={person.id} 
+                    className="md-cast-card"
+                    onClick={() => navigate(`/cast/${person.id}`)}
+                  >
+                    <img
+                      className="md-cast-photo"
+                      src={person.profile_path 
+                        ? `https://image.tmdb.org/t/p/w185${person.profile_path}`
+                        : "/placeholder.png"
+                      }
+                      alt={person.name}
+                    />
+                    <div className="md-cast-info">
+                      <p className="md-cast-name">{person.name}</p>
+                      <p className="md-cast-character">Writer</p>
+                    </div>
+                  </div>
+                ))}
+                {crew.composers?.length > 0 && crew.composers.map(person => (
+                  <div 
+                    key={person.id} 
+                    className="md-cast-card"
+                    onClick={() => navigate(`/cast/${person.id}`)}
+                  >
+                    <img
+                      className="md-cast-photo"
+                      src={person.profile_path 
+                        ? `https://image.tmdb.org/t/p/w185${person.profile_path}`
+                        : "/placeholder.png"
+                      }
+                      alt={person.name}
+                    />
+                    <div className="md-cast-info">
+                      <p className="md-cast-name">{person.name}</p>
+                      <p className="md-cast-character">Music Composer</p>
+                    </div>
+                  </div>
+                ))}
+                {crew.cinematographers?.length > 0 && crew.cinematographers.map(person => (
+                  <div 
+                    key={person.id} 
+                    className="md-cast-card"
+                    onClick={() => navigate(`/cast/${person.id}`)}
+                  >
+                    <img
+                      className="md-cast-photo"
+                      src={person.profile_path 
+                        ? `https://image.tmdb.org/t/p/w185${person.profile_path}`
+                        : "/placeholder.png"
+                      }
+                      alt={person.name}
+                    />
+                    <div className="md-cast-info">
+                      <p className="md-cast-name">{person.name}</p>
+                      <p className="md-cast-character">Cinematographer</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
           {cast.length > 0 && (
             <section className="md-section">
               <h2 className="md-section-title">Cast</h2>
               <div className="md-cast-grid">
                 {cast.map(person => (
-                  <div key={person.id} className="md-cast-card">
+                  <div 
+                    key={person.id} 
+                    className="md-cast-card"
+                    onClick={() => navigate(`/cast/${person.id}`)}
+                  >
                     <img
                       className="md-cast-photo"
                       src={person.profile_path 

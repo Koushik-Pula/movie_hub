@@ -523,3 +523,53 @@
         font-size: 0.9rem;
     }
 }
+
+
+/* Crew Section */
+.md-crew-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.md-crew-card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-left: 4px solid var(--accent);
+}
+
+.md-crew-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(183, 28, 28, 0.15);
+}
+
+.md-crew-role {
+    font-size: 0.9rem;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.md-crew-names {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+    .md-crew-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+    }
+    
+    .md-crew-card {
+        padding: 15px;
+    }
+}
