@@ -1,0 +1,27 @@
+# Node modules (installed inside container)
+node_modules
+
+# Production build folder (will be generated inside container)
+build
+
+# Docker files themselves
+Dockerfile
+.dockerignore
+
+# Local environment files (keep secrets out of image)
+.env.local
+.env.development
+.env.test
+
+# Git files and folders
+.git
+.gitignore
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

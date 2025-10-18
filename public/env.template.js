@@ -1,0 +1,4 @@
+window._env_ = {
+    REACT_APP_TMDB_API_KEY: "$REACT_APP_TMDB_API_KEY"
+};
+  
